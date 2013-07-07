@@ -17,18 +17,19 @@ var _ = { };
   // return just the first element.
   _.first = function(array, n) {
     items = []
-    if (n == undefined) {return array[0];} //should I be returning an array of the first element, or just the first element?
+    if (n == undefined) {return array[0];}            
+    if (n > array.length) {n = array.length;}
     for (var i = 0; i<n; i++) {items.push(array[i]);}
     return items;
-
 };
 
   // Like first, but for the last elements. If n is undefined, return just the
   // last element.
   _.last = function(array, n) {
     items = []
-    if (n == undefined) {return array[array.length - ];}
-    for (var i = array.length - 1; i > array.length - n - 1; i--) {items.push(array[i];}
+    if (n === undefined) {return array[array.length - 1];}
+    if (n > array.length) {n = array.length;}
+    for (var i = array.length - 1; i > array.length - n - 1; i--) {items.push(array[i]);}
     return items; 
   };
 

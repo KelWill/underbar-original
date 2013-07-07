@@ -1,4 +1,12 @@
 var returnArguments = function(){ return arguments; };
+var _ = { };
+_.first = function(array, n) {
+    items = []
+    if (n === undefined) {return array[0];}  
+    if (n > array.length) {n = array.length;}
+    for (var i = 0; i<n; i++) {items.push(array[i]);}
+    return items;
+};
 
 describe("first", function() {
   it("should be able to pull out the first element of an array", function() {
