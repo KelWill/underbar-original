@@ -29,7 +29,7 @@ var _ = { };
     items = []
     if (n === undefined) {return array[array.length - 1];}
     if (n > array.length) {n = array.length;}
-    for (var i = array.length - 1; i > array.length - n - 1; i--) {items.push(array[i]);}
+    for (var i = array.length - n; i < array.length; i++) {items.push(array[i]);}
     return items; 
   };
 
