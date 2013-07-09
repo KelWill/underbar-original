@@ -16,17 +16,19 @@ var _ = { };
   // Return an array of the first n elements of an array. If n is undefined,
   // return just the first element.
   _.first = function(array, n) {
-    items = []
+    var items = [];
     if (n == undefined) {return array[0];}            
+    
     if (n > array.length) {n = array.length;}
-    for (var i = 0; i<n; i++) {items.push(array[i]);}
+    for (var i = 0; i<n; i++) 
+      {items.push(array[i]);}
     return items;
 };
 
   // Like first, but for the last elements. If n is undefined, return just the
   // last element.
   _.last = function(array, n) {
-    items = []
+    var items = [];
     if (n === undefined) {return array[array.length - 1];}
     if (n > array.length) {n = array.length;}
     for (var i = array.length - n; i < array.length; i++) {items.push(array[i]);}
@@ -35,41 +37,47 @@ var _ = { };
 
   // Call iterator(value, key, collection) for each element of collection.
   // Accepts both arrays and objects.
-  _.each = function(collection, iterator) {
-    key = arguments[2];
-    var answer = -1;
-    if (Array.isArray(collection)) {
+  _.each = function(collection, iterator) { 
+    //if (collection==null) {return;}
+    var target = arguments[2];
+    var response = arguments[3];
+    //console.log(target);
+    if (Array.isArray(collection)) 
+    {
       for (var i = 0; i < collection.length; i++)
       {
-        if (answer === -1)
-	{
-	  answer = iterator(i, key, collection);
-	}
-	else {
-	return answer;
-	}
-      }
+        iterator(collection[i], i, collection, target, response); 
+      }  
     }
     else
     {
       for (var i in collection )
       {
-        answer = iterator(i, key, collection);
+        iterator(collection[i], i, collection);
       }    
     }
-    return answer;
+    return response;
   };
 
   // Returns the index at which value can be found in the array, or -1 if value
   // is not present in the array.
-  _.indexOf = function(array, target){
-   var iterator = function(value, key, collection) {
-     if (collection[value] === key) {
-       return value;
+  _.indexOf = function(array, target){  //note: I should probably figure out a way to pass in some sort of breaker, but this is working for now. 
+   var iterator = function(value, key, collection, target, index) 
+   {   
+     if (value === target) 
+     {
+       index.push(key);
      }
-     return -1;
-   }
-   return _.each(array, iterator, target);   
+   };
+   var index = _.each(array, iterator, target, []);
+   for (var i = 0; i<index.length; i++) 
+     {
+       if (index[i] > -1) 
+       {
+         return index[i];
+       }
+     } 
+   return -1;
     // TIP: Here's an example of a function that needs to iterate, which we've
     // implemented for you. Instead of using a standard `for` loop, though,
     // it uses the iteration helper `each`, which you will need to write.
