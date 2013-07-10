@@ -41,7 +41,6 @@ var _ = { };
     //if (collection==null) {return;}
     var target = arguments[2];
     var response = arguments[3];
-    //console.log(target);
     if (Array.isArray(collection)) 
     {
       for (var i = 0; i < collection.length; i++)
@@ -85,25 +84,59 @@ var _ = { };
 
   // Return all elements of an array that pass a truth test.
   _.filter = function(collection, iterator) {
+    var response = [];
+    for (var i = 0; i<collection.length; i++)
+    {
+      if (iterator(collection[i]))
+      {
+        response.push(collection[i]);
+      }
+    }
+    return response;
   };
 
   // Return all elements of an array that don't pass a truth test.
-  _.reject = function(collection, iterator) {
-    // TIP: see if you can re-use _.select() here, without simply
+  _.reject = function(collection, iterator) {  //should go back and redo to use _.filter and _.indexOf
+    var response = [];
+    for (var i = 0; i<collection.length; i++)
+    {
+      if (!iterator(collection[i]))
+      {
+        response.push(collection[i]);
+      }
+    }
+    return response;
+    
+    // TIP: see if you can re-use _.filter() here, without simply
     // copying code in and modifying it
   };
 
   // Produce a duplicate-free version of the array.
   _.uniq = function(array) {
+    var results = [];
+    while (true)
+    {
+      var a = array.shift();
+      if (_.indexOf(results, a)==-1)
+      {
+        results.push(a);
+      }
+      if (array.length == 0) {return results}
+    }
   };
 
 
   // Return the results of applying an iterator to each element.
   _.map = function(array, iterator) {
-    // map() is a useful primitive iteration function that works a lot
-    // like each(), but in addition to running the operation on all
-    // the members, it also maintains an array of results.
+    var results = []
+    for (var i = 0; i < array.length; i++)
+    {
+      results.push(iterator(array[i], i, array)); 
+    }  
+    
+    return results;
   };
+ 
 
   /*
    * TIP: map is really handy when you want to transform an array of
@@ -125,6 +158,13 @@ var _ = { };
 
   // Calls the method named by methodName on each value in the list.
   _.invoke = function(list, methodName, args) {
+    var results = [];
+    for (var i = 0; i<list.length; i++) 
+    {
+      //results.push(methodName.call(list[i], args); 
+      pass
+    }
+    return results;
   };
 
   // Reduces an array or object to a single value by repetitively calling
@@ -141,6 +181,22 @@ var _ = { };
   //   }, 0); // should be 6
   //
   _.reduce = function(collection, iterator, initialValue) {
+    var previousValue = initialValue || 0;
+    //I need to change reduce so that it can handle arrays and objects
+    if (Array.isArray(collection))
+    {  for (var i=0; i<collection.length; i++)
+      {
+        previousValue = iterator(previousValue, collection[i]);
+      }
+    }
+    else 
+    {
+      for (var i in collection) 
+      {
+        previousValue = iterator(previousValue, collection[i]);
+      }
+    }
+    return previousValue;
   };
 
   // Determine if the array or object contains a given value (using `===`).
@@ -158,12 +214,24 @@ var _ = { };
 
   // Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
+    iterator = iterator || function(previousValue, value) {return true;};
+    var check = _.map(collection, iterator);
+    if (collection.length == 0) {return true;}
+    if (_.contains(check, false)) {return false;}
+    if (_.contains(check, undefined)) {return false;}
+    
+    if (_.reduce(check, function(num1, num2){return num1+num2})===0) {return false;}
+    return true;
     // TIP: Try re-using reduce() here.
   };
 
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
-  _.some = function(collection, iterator) {
+  _.some = function(collection, iterator) {  //not yet finished!
+    iterator = iterator || function(previousValue, value) {return true;};
+    if (collection.length == 0) {return false;}
+    if (_.every(collection, iterator)==true) {return true}
+    return (_.contains(_.map(collection, iterator)), true); 
     // TIP: There's a very clever way to re-use every() here.
   };
 
