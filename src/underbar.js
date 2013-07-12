@@ -131,7 +131,7 @@ var _ = { };
     var results = []
     for (var i = 0; i < array.length; i++)
     {
-      results.push(iterator(array[i], i, array)); 
+      results.push(iterator(array[i])); 
     }  
     
     return results;
@@ -160,9 +160,10 @@ var _ = { };
   _.invoke = function(list, methodName, args) {
     var results = [];
     for (var i = 0; i<list.length; i++) 
-    {
-      //results.push(methodName.call(list[i], args); 
-      pass
+    { 
+	  if (methodName in list[i]){ //this is if it's a method of list[i]
+        results.push(list[i][methodName](args)); 
+      }
     }
     return results;
   };
@@ -211,31 +212,34 @@ var _ = { };
     }, false);
   };
 
-
   // Determine whether all of the elements match a truth test.
   _.every = function(collection, iterator) {
-    iterator = iterator || function(previousValue, value) {return true;};
-    var check = _.map(collection, iterator);
-    if (collection.length == 0) {return true;}
-    if (_.contains(check, false)) {return false;}
-    if (_.contains(check, undefined)) {return false;}
-    
-    if (_.reduce(check, function(num1, num2){return num1+num2})===0) {return false;}
+    iterator = iterator || function(item) {
+	  return !!item;
+	} 
+    var results = _.map(_.map(collection, iterator), function(item) {return !!item;});
+    if (_.contains(results, false)) 
+	  {return false;}
     return true;
     // TIP: Try re-using reduce() here.
   };
 
   // Determine whether any of the elements pass a truth test. If no iterator is
   // provided, provide a default one
-  _.some = function(collection, iterator) {  //not yet finished!
-    iterator = iterator || function(previousValue, value) {return true;};
-    if (collection.length == 0) {return false;}
-    if (_.every(collection, iterator)==true) {return true}
-    return (_.contains(_.map(collection, iterator)), true); 
-    // TIP: There's a very clever way to re-use every() here.
+  _.some = function(collection, iterator) {  
+    iterator = iterator || function(item) {return !!item;};
+	var results = _.map(collection, iterator);
+	for (var i = 0; i<results.length; i++){
+	  if (results[i]==true) {
+	    return true
+	  }
+	}
+	return false;
+    // TIP: There's a very clever way to re-use every() here.  In _.every, if iterator returns false once, everything is false, in _.some if it returns true once, everything is true
+	// Tried doing it the classy way with every and double negatives, but I can't figure out a way to pas iterator into a new function that returns the opposite of what iterator does
+	// and then pass that into _.every  so I'm doing it the easy way.
   };
-
-
+  
   /**
    * OBJECTS
    * =======
@@ -255,11 +259,25 @@ var _ = { };
   //     bla: "even more stuff"
   //   }); // obj1 now contains key1, key2, key3 and bla
   _.extend = function(obj) {
+    for (var i = 1; i<arguments.length; i++){
+	  for (var j in arguments[i]){
+	    obj[j] = arguments[i][j];
+	  }
+	}
+	return obj 
   };
 
   // Like extend, but doesn't ever overwrite a key that already
   // exists in obj
   _.defaults = function(obj) {
+    for (var i = 1; i<arguments.length; i++){
+	  for (var j in arguments[i]){
+	    if (!(j in obj)){
+	      obj[j] = arguments[i][j];
+		}
+	  }
+	}
+	return obj 
   };
 
 
