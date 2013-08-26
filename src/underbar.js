@@ -164,6 +164,9 @@ var _ = { };
 	  if (methodName in list[i]){ //this is if it's a method of list[i]
         results.push(list[i][methodName](args)); 
       }
+	  else {
+	    results.push(methodName.apply(list[i], args));
+	  }
     }
     return results;
   };
@@ -317,9 +320,24 @@ var _ = { };
   // Memoize should return a function that when called, will check if it has
   // already computed the result for the given argument and return that value
   // instead if possible.
-  _.memoize = function(func) {
-  };
 
+  _.memoize = function(func) {  
+    var newFunc = function(arg) {
+      if (!_.memoize.all[func]) {
+        _.memoize.all[func] = {};
+      }
+      for (var a in _.memoize.all[func]){
+          if (a===arg){
+            return _.memoize.all[func][a];
+          }
+        }
+      var result = func.apply(this, arguments);;
+      _.memoize.all[func][arg] = result;
+      return result;
+    };
+    return newFunc  
+  };
+  _.memoize.all = {}
   // Delays a function for the given number of milliseconds, and then calls
   // it with the arguments supplied.
   //
@@ -327,6 +345,16 @@ var _ = { };
   // parameter. For example _.delay(someFunction, 500, 'a', 'b') will
   // call someFunction('a', 'b') after 500ms
   _.delay = function(func, wait) {
+    if (arguments[2]) {
+	  var args = [];
+	  for (var i = 2; i<arguments.length; i++){
+	    args.push(arguments[i]);
+	  }
+	setTimeout(func.apply(this, args), wait);
+	}
+	else{
+	  setTimeout(func, wait);
+	}
   };
 
 
@@ -337,6 +365,21 @@ var _ = { };
 
   // Shuffle an array.
   _.shuffle = function(array) {
+    var len = array.length;
+	var results = [];
+	var hasValue = [];
+	var i = 0;
+	while (true){
+	  var key = Math.floor(Math.random()*len);
+	  if (!_.contains(hasValue, key)){
+	    results[key] = array[i];
+		hasValue.push(key);
+		i = i + 1;
+		if (i == len) {
+		  return results;
+		}
+	  }
+	}
   };
 
 
